@@ -1,6 +1,6 @@
 ### Service Discovery
 
-Service discovery and configuration initialization in etcd
+Docker containers discovery and configuration initialization in etcd
 
 ```
 labels:
