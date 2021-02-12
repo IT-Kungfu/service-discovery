@@ -2,18 +2,20 @@ package discovery
 
 import (
 	"context"
-	"fmt"
 	"go.etcd.io/etcd/clientv3"
 	"os"
 	"strings"
 	"time"
 )
 
+const (
+	DefaultETCDAddr = "localhost:2379"
+)
+
 func (d *Discovery) initEtcdClient() error {
 	etcdAddr := os.Getenv("ETCD_ADDR")
-
 	if len(etcdAddr) == 0 {
-		return fmt.Errorf("etcd server address is not specified")
+		etcdAddr = DefaultETCDAddr
 	}
 
 	etcdConfig := clientv3.Config{

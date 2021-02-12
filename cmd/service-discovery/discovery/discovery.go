@@ -3,12 +3,12 @@ package discovery
 import (
 	"context"
 	"fmt"
+	"github.com/IT-Kungfu/logger"
+	"github.com/IT-Kungfu/service-discovery/cmd/service-discovery/config"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/client"
-	"github.com/sirupsen/logrus"
 	"go.etcd.io/etcd/clientv3"
-	"secret-maintenance/cmd/service-discovery/config"
 	"strings"
 )
 
@@ -26,7 +26,7 @@ const (
 
 type Discovery struct {
 	cfg          *config.Config
-	log          *logrus.Logger
+	log          *logger.Logger
 	dockerClient *client.Client
 	etcdClient   *clientv3.Client
 	ctx          context.Context
@@ -37,7 +37,7 @@ func New(ctx context.Context) (*Discovery, error) {
 	services := ctx.Value("services").(map[string]interface{})
 	d := &Discovery{
 		cfg: services["cfg"].(*config.Config),
-		log: services["log"].(*logrus.Logger),
+		log: services["log"].(*logger.Logger),
 	}
 
 	d.ctx, d.ctxCancel = context.WithCancel(context.Background())

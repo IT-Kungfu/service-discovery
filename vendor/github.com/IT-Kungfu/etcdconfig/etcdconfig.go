@@ -2,7 +2,6 @@ package etcdconfig
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go.etcd.io/etcd/clientv3"
 	"log"
@@ -14,9 +13,18 @@ import (
 )
 
 const (
-	TagDefault     = "default"
-	TagEtcd        = "etcd"
-	TagEtcdWatcher = "watcher"
+	DefaultETCDAddr              = "localhost:2379"
+	TagDefault                   = "default"
+	TagETCD                      = "etcd"
+	TagConnection                = "connection"
+	TagETCDWatcher               = "watcher"
+	EnvInstanceSuffix            = "_INSTANCE"
+	EnvExternalSuffix            = "_EXTERNAL"
+	ETCDExternalSuffix           = "/external"
+	ETCDHostPattern              = "/services/%s/%s/host"
+	ETCDExternalHostPattern      = "/services/%s/%s/host/external"
+	ETCDPortsGrpcPattern         = "/services/%s/%s/ports/grpc"
+	ETCDExternalPortsGrpcPattern = "/services/%s/%s/ports/grpc/external"
 )
 
 type ETCDObserver interface {
@@ -34,9 +42,8 @@ func GetConfig(c interface{}) (*ETCDConfig, error) {
 	}
 
 	etcdAddr := os.Getenv("ETCD_ADDR")
-
 	if len(etcdAddr) == 0 {
-		return nil, errors.New("etcd server address is not specified")
+		etcdAddr = DefaultETCDAddr
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -60,12 +67,12 @@ func GetConfig(c interface{}) (*ETCDConfig, error) {
 	for i := 0; i < ref.Type().NumField(); i++ {
 		f := ref.Type().Field(i)
 
-		keyName, isWatch := cfg.parseEtcdTag(ref.Type().Field(i).Tag.Get(TagEtcd))
+		keyName, isWatch := cfg.parseEtcdTag(ref.Type().Field(i).Tag.Get(TagETCD), TagETCDWatcher)
 		if keyName == "" {
 			continue
 		}
 
-		keyName = cfg.prepareKey(keyName)
+		keyName = cfg.prepareKey(keyName, f.Tag.Get(TagConnection) == "true")
 
 		v, err := cli.Get(ctx, keyName)
 		if err != nil {
@@ -106,7 +113,7 @@ func GetConfig(c interface{}) (*ETCDConfig, error) {
 	return cfg, nil
 }
 
-func (cfg *ETCDConfig) prepareKey(key string) string {
+func (cfg *ETCDConfig) prepareKey(key string, isConnection bool) string {
 	for {
 		in := strings.Index(key, "{{")
 		if in == -1 {
@@ -116,8 +123,17 @@ func (cfg *ETCDConfig) prepareKey(key string) string {
 		if out == -1 {
 			break
 		}
-		value := os.Getenv(key[in+2 : out])
+
+		env := key[in+2 : out]
+		value := os.Getenv(env)
 		key = strings.Replace(key, key[in:out+2], value, -1)
+
+		if isConnection && strings.HasSuffix(env, EnvInstanceSuffix) {
+			serviceName := strings.ReplaceAll(env, EnvInstanceSuffix, "")
+			if os.Getenv(serviceName+EnvExternalSuffix) == "true" {
+				key += ETCDExternalSuffix
+			}
+		}
 	}
 	return key
 }
@@ -147,10 +163,10 @@ func (cfg *ETCDConfig) addWatcher(etcd *clientv3.Client, keyName string, configF
 	}()
 }
 
-func (cfg *ETCDConfig) parseEtcdTag(tag string) (string, bool) {
+func (cfg *ETCDConfig) parseEtcdTag(tag, etcdTag string) (string, bool) {
 	params := strings.Split(tag, ",")
 	if len(params) == 2 {
-		return params[0], params[1] == TagEtcdWatcher
+		return params[0], params[1] == etcdTag
 	}
 	return tag, false
 }

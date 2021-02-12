@@ -2,29 +2,39 @@ package main
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
+	"github.com/IT-Kungfu/etcdconfig"
+	"github.com/IT-Kungfu/logger"
+	"github.com/IT-Kungfu/service-discovery/cmd/service-discovery/config"
+	"github.com/IT-Kungfu/service-discovery/cmd/service-discovery/discovery"
 	"os"
 	"os/signal"
 	"runtime"
-	"secret-maintenance/cmd/service-discovery/config"
-	"secret-maintenance/cmd/service-discovery/discovery"
-	"secret-maintenance/internal/etcdconfig"
-	"secret-maintenance/internal/logger"
 	"syscall"
 )
 
 var (
-	cfg = &config.Config{}
-	log = logrus.New()
+	etcd = &etcdconfig.ETCDConfig{}
+	cfg  = &config.Config{}
+	log  *logger.Logger
 )
 
 func init() {
-	_, err := etcdconfig.GetConfig(cfg)
+	var err error
+	etcd, err = etcdconfig.GetConfig(cfg)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	log = logger.NewLogger(cfg.LogLevel, cfg.SentryDSN, "service-discovery")
+	if log, err = logger.New(&logger.Config{
+		LogLevel:     cfg.LogLevel,
+		SentryDSN:    "",
+		LogstashAddr: "",
+		ServiceName:  "service-discovery",
+		InstanceName: "dev",
+	}); err != nil {
+		panic(err)
+	}
+	etcd.AddObserver(log)
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }

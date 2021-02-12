@@ -9,17 +9,14 @@ services:
     container_name: service-discovery
     environment:
       ETCD_ADDR: 192.168.0.33:2379,192.168.0.24:2379,192.168.0.50:2379
-      SERVICE_DISCOVERY_INSTANCE: deploy
+      SERVICE_DISCOVERY_INSTANCE: dev
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - auth-network
       - etcd-network
       - core-network
 
 networks:
-  auth-network:
-    external: true
   etcd-network:
     external: true
   core-network:

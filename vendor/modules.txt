@@ -1,3 +1,9 @@
+# github.com/IT-Kungfu/etcdconfig v0.0.0-20210212124933-418b00ab6137
+## explicit
+github.com/IT-Kungfu/etcdconfig
+# github.com/IT-Kungfu/logger v0.0.0-20210212120512-59d1c23ad32c
+## explicit
+github.com/IT-Kungfu/logger
 # github.com/Microsoft/go-winio v0.4.16
 ## explicit
 github.com/Microsoft/go-winio
@@ -41,7 +47,7 @@ github.com/coreos/pkg/capnslog
 github.com/docker/distribution/digestset
 github.com/docker/distribution/reference
 github.com/docker/distribution/registry/api/errcode
-# github.com/docker/docker v20.10.2+incompatible
+# github.com/docker/docker v20.10.3+incompatible
 ## explicit
 github.com/docker/docker/api
 github.com/docker/docker/api/types
@@ -80,18 +86,16 @@ github.com/getsentry/raven-go
 github.com/gogo/protobuf/gogoproto
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/protoc-gen-gogo/descriptor
-# github.com/golang/protobuf v1.4.3
-## explicit
+# github.com/golang/protobuf v1.4.2
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go/descriptor
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/google/uuid v1.1.2
-github.com/google/uuid
-# github.com/jinzhu/gorm v1.9.16
+# github.com/google/uuid v1.2.0
 ## explicit
+github.com/google/uuid
 # github.com/opencontainers/go-digest v1.0.0
 ## explicit
 github.com/opencontainers/go-digest
@@ -100,7 +104,6 @@ github.com/opencontainers/go-digest
 github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
 # github.com/pkg/errors v0.9.1
-## explicit
 github.com/pkg/errors
 # github.com/sirupsen/logrus v1.7.0
 ## explicit

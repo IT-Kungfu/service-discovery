@@ -1,12 +1,12 @@
 ### Service Discovery
 
-Обнаружение сервисов и инициализация конфигурации в ETCD
+Service discovery and configuration initialization in etcd
 
 ```
 labels:
-    discovery.service.name: auth-grpc
-    discovery.service.network: auth-network
-    discovery.service.instance: deploy
+    discovery.service.name: service-name
+    discovery.service.network: service-network
+    discovery.service.instance: dev
     discovery.service.ports.grpc: 9001
     discovery.service.host.external: 192.168.0.33
 ```
