@@ -30,7 +30,7 @@ func init() {
 		SentryDSN:    "",
 		LogstashAddr: "",
 		ServiceName:  "service-discovery",
-		InstanceName: "dev",
+		InstanceName: cfg.InstanceName,
 	}); err != nil {
 		panic(err)
 	}
